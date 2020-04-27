@@ -84,11 +84,11 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.lessonRemoveButton.isEnabled = self.selectedLesson != nil
         self.lessonAddButton.isEnabled = self.selectedLevel != nil
         
-        self.lessonUpButton.isEnabled = self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 1
-        self.lessonDownButton.isEnabled = self.lessonSelector.indexOfSelectedItem > 0
+        self.lessonUpButton.isEnabled = self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 2
+        self.lessonDownButton.isEnabled = self.lessonSelector.indexOfSelectedItem > 0 && self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 1
         
         self.saveButton.isEnabled = self.changed
-        
+        self.notesField.isEditable = self.selectedLesson != nil
     }
     
     func markChanged(){
@@ -106,6 +106,7 @@ class CreateVC: NSViewController, DropViewDelegate {
             
         }
         
+        
         self.levelSelector.selectItem(at: index)
         
         self.setLessonPicker()
@@ -122,6 +123,8 @@ class CreateVC: NSViewController, DropViewDelegate {
         for item in self.jsonManager.lessons(forLevel: level) {
             self.lessonSelector.addItem(withTitle: item[JSONKey.lessonName.keyValue()].string ?? "no name")
         }
+        
+        self.lessonSelector.addItem(withTitle: "Pretest")
         
         self.lessonSelector.selectItem(at: index)
         
@@ -152,7 +155,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         
         self.jsonManager.setLessons(lessons, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
         
-        self.setLessonPicker(selectIndex:self.lessonSelector.numberOfItems)
+        self.setLessonPicker(selectIndex:self.lessonSelector.numberOfItems - 1)
         
         self.markChanged()
     }
@@ -221,9 +224,6 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.toggleButtons()
         
     }
-    
-   
-    
     
     
     func didGetURL(url: URL, dropView: DropView) {
@@ -317,44 +317,44 @@ class CreateVC: NSViewController, DropViewDelegate {
 extension CreateVC:NSTableViewDelegate, NSTableViewDataSource {
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        guard let lesson = self.selectedLesson else {return 0}
+        guard let level = self.selectedLevel else {return 0}
+        let lesson = self.selectedLesson ?? self.jsonManager.pretest(forLevel: level)
         let cardType = tableView == self.vocabTable ? JSONKey.vocabularyCards.keyValue():JSONKey.grammarCards.keyValue()
        
         return lesson[cardType].arrayValue.count
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        
-        guard let lesson = self.selectedLesson else { return nil}
+        guard let level = self.selectedLevel else {return nil}
+        let lesson = self.selectedLesson ?? self.jsonManager.pretest(forLevel: level)
         let cardType = tableView == self.vocabTable ? JSONKey.vocabularyCards.keyValue():JSONKey.grammarCards.keyValue()
         
         let card = lesson[cardType].arrayValue[row]
         
+        
         if tableColumn!.identifier.rawValue == "final" {
-            
-            let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! CheckCell
-            
-            if let include = card[JSONKey.includedInFinal.keyValue()].bool, include == false {
-                cell.checkBox.state = .off
+            if self.selectedLesson != nil {
+                let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! CheckCell
+                
+                if let include = card[JSONKey.includedInFinal.keyValue()].bool, include == false {
+                    cell.checkBox.state = .off
+                } else {
+                    cell.checkBox.state = .on
+                }
+                
+                return cell
+                
             } else {
-                cell.checkBox.state = .on
+                
+                return NSView()
             }
-            
-            return cell
-            
         }
         
         let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
         
-        
-        
         let field = tableColumn!.identifier.rawValue.lowercased()
         
-       
         cell.textField?.stringValue = card[field].stringValue
-        
-        
-        
         
         return cell
     }

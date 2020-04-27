@@ -29,6 +29,7 @@ enum JSONKey {
     case lessons
     case levelID
     case lessonID
+    case pretestID
     case lessonName
     case vocabularyCards
     case grammarCards
@@ -37,12 +38,13 @@ enum JSONKey {
     case answer
     case notes
     case includedInFinal
+    case pretest
     
     func keyValue()->String {
         
         switch self {
             
-        case .jsonID, .lessonID:
+        case .jsonID, .lessonID, .pretestID:
             return "id"
         case .levels:
             return "levels"
@@ -62,6 +64,8 @@ enum JSONKey {
             return "notes"
         case .includedInFinal:
             return "includeInFinal"
+        case .pretest:
+            return "pretest"
         }
     }
 }
@@ -115,15 +119,23 @@ class JSONManager: NSObject {
         var levels = [JSON]()
         
         for levelName in LevelName.allCases {
+            
+            var level:JSON!
+            
             if levelNames.contains(levelName.rawValue) {
-                
-                levels.append(self.levels[levelNames.firstIndex(of: levelName.rawValue)!])
+                level = self.levels[levelNames.firstIndex(of: levelName.rawValue)!]
                 
             } else {
-                
-                levels.append(JSON([JSONKey.levelID.keyValue():JSON(levelName.rawValue)]))
+                level = JSON([JSONKey.levelID.keyValue():JSON(levelName.rawValue)])
                 
             }
+            
+            //check for pretest
+            if self.pretest(forLevel: level).isEmpty {
+                level[JSONKey.pretest.keyValue()] = [JSONKey.pretestID.keyValue():UUID().uuidString,  JSONKey.vocabularyCards.keyValue():[JSON](), JSONKey.grammarCards.keyValue():[JSON]()]
+            }
+            
+            levels.append(level)
                 
         }
         
@@ -144,6 +156,14 @@ class JSONManager: NSObject {
         
     }
     
+    func setPretest(_ pretest:JSON, forLevelAtIndex index:Int) {
+        
+        guard self.levels.count > index else { return }
+        
+        self.json[JSONKey.levels.keyValue()][index][JSONKey.pretest.keyValue()] = JSON(pretest)
+        
+    }
+    
     func setNotes(_ notes:String, forLessonAtIndex lessonIndex:Int, inLevelAtIndex levelIndex:Int) {
         
         guard self.lessonExists(atIndex: lessonIndex, inLevelAtIndex: levelIndex) else { return }
@@ -154,17 +174,24 @@ class JSONManager: NSObject {
     
     func setCards(_ cards:[JSON], ofType type:String, forLessonAtIndex lessonIndex:Int, inLevelAtIndex levelIndex:Int) {
         
-        guard self.lessonExists(atIndex: lessonIndex, inLevelAtIndex: levelIndex) else { return }
+        if self.lessonExists(atIndex: lessonIndex, inLevelAtIndex: levelIndex) {
+            
+            self.json[JSONKey.levels.keyValue()][levelIndex][JSONKey.lessons.keyValue()][lessonIndex][type] = JSON(cards)
+            return
+            
+        }
         
-        self.json[JSONKey.levels.keyValue()][levelIndex][JSONKey.lessons.keyValue()][lessonIndex][type] = JSON(cards)
+        self.json[JSONKey.levels.keyValue()][levelIndex][JSONKey.pretest.keyValue()][type] = JSON(cards)
         
     }
     
+    
+    
     func editCard(ofType type:String, atIndex cardIndex:Int, inLessonAtIndex lessonIndex:Int, inLevelAtIndex levelIndex:Int, newValue:Any, forProperty property:String) {
         
-        guard self.lessonExists(atIndex: lessonIndex, inLevelAtIndex: levelIndex) else { return }
+        // if index is greater than lesson count use pretest
+        var cards = self.cardsForLessonOrPretest(ofType: type, atIndex: lessonIndex, inLevelAtIndex: levelIndex).arrayValue
         
-        var cards = self.json[JSONKey.levels.keyValue()][levelIndex][JSONKey.lessons.keyValue()][lessonIndex][type].arrayValue
         
         if cards.count > cardIndex {
             
@@ -184,11 +211,17 @@ class JSONManager: NSObject {
         
         return self.levels.count > levelIndex && self.lessons(forLevel: self.levels[levelIndex]).count > lessonIndex
     }
+    
+    func cardsForLessonOrPretest(ofType type: String, atIndex lessonIndex:Int, inLevelAtIndex levelIndex:Int)->JSON {
+        return self.lessonExists(atIndex: lessonIndex, inLevelAtIndex: levelIndex) ? self.json[JSONKey.levels.keyValue()][levelIndex][JSONKey.lessons.keyValue()][lessonIndex][type] : self.json[JSONKey.levels.keyValue()][levelIndex][JSONKey.pretest.keyValue()][type]
+    }
 
     
     var levels:[JSON] { return self.json[JSONKey.levels.keyValue()].arrayValue }
     
     func lessons(forLevel level:JSON)-> [JSON] { return level[JSONKey.lessons.keyValue()].arrayValue }
+    
+    func pretest(forLevel level:JSON)-> JSON { return level[JSONKey.pretest.keyValue()] }
     
     func vocabulary(forLesson lesson:JSON)->[JSON] { return lesson[JSONKey.vocabularyCards.keyValue()].arrayValue }
     
