@@ -36,6 +36,7 @@ enum JSONKey {
     case question
     case answer
     case notes
+    case includedInFinal
     
     func keyValue()->String {
         
@@ -59,8 +60,9 @@ enum JSONKey {
             return "answer"
         case .notes:
             return "notes"
+        case .includedInFinal:
+            return "includeInFinal"
         }
-        
     }
 }
 
@@ -158,7 +160,7 @@ class JSONManager: NSObject {
         
     }
     
-    func editCard(ofType type:String, atIndex cardIndex:Int, inLessonAtIndex lessonIndex:Int, inLevelAtIndex levelIndex:Int, newValue:String, forProperty property:String) {
+    func editCard(ofType type:String, atIndex cardIndex:Int, inLessonAtIndex lessonIndex:Int, inLevelAtIndex levelIndex:Int, newValue:Any, forProperty property:String) {
         
         guard self.lessonExists(atIndex: lessonIndex, inLevelAtIndex: levelIndex) else { return }
         

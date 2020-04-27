@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,6 +21,7 @@
 		C4A0BCC6235B55DF000EA12F /* MixDropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A0BCC3235B55D9000EA12F /* MixDropView.swift */; };
 		C4A0BCC7235B55DF000EA12F /* DropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A0BCC4235B55D9000EA12F /* DropView.swift */; };
 		FC53D45223780F980057FAE0 /* CustomTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC53D45123780F980057FAE0 /* CustomTextCell.swift */; };
+		FC7C72702456F17D00C497F1 /* CheckCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7C726F2456F17D00C497F1 /* CheckCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		E6A8B718CEAE66A5A97C3E8E /* Pods-MaximumEnglishDataCreator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaximumEnglishDataCreator.release.xcconfig"; path = "Target Support Files/Pods-MaximumEnglishDataCreator/Pods-MaximumEnglishDataCreator.release.xcconfig"; sourceTree = "<group>"; };
 		F86D2BD375EA5B580FFE9853 /* Pods_MaximumEnglishDataCreator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MaximumEnglishDataCreator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC53D45123780F980057FAE0 /* CustomTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextCell.swift; sourceTree = "<group>"; };
+		FC7C726F2456F17D00C497F1 /* CheckCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				C4A0BCB3235B5495000EA12F /* StartView.swift */,
 				C472E6EB235C03340049763B /* CreateVC.swift */,
 				C493AAB1235B8438000F86F5 /* JSONManager.swift */,
+				FC7C726F2456F17D00C497F1 /* CheckCell.swift */,
 				FC53D45123780F980057FAE0 /* CustomTextCell.swift */,
 				C493AAB7235B865F000F86F5 /* Extensions.swift */,
 				C493AAB9235B86E4000F86F5 /* Alerts.swift */,
@@ -241,6 +244,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC7C72702456F17D00C497F1 /* CheckCell.swift in Sources */,
 				C493AAB6235B85BF000F86F5 /* Prefs.swift in Sources */,
 				C4A0BCB4235B5495000EA12F /* StartView.swift in Sources */,
 				C472E6EC235C03340049763B /* CreateVC.swift in Sources */,
@@ -391,7 +395,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = P8SN332T55;
+				DEVELOPMENT_TEAM = UQ3BB547F3;
 				INFOPLIST_FILE = MaximumEnglishDataCreator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

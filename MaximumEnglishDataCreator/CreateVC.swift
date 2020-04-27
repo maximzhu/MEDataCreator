@@ -205,6 +205,26 @@ class CreateVC: NSViewController, DropViewDelegate {
         return (newArray, newIndex)
     }
     
+
+    @IBAction func checkBoxChecked(_ sender: NSButton) {
+        
+        let isVocab = self.vocabTable.row(for: sender) >= 0
+        
+        let row = isVocab ? self.vocabTable.row(for: sender) : self.grammarTable.row(for: sender)
+        let type:CardType = isVocab ? .vocab : .grammar
+        
+        if row < 0 { return }
+        
+        self.jsonManager.editCard(ofType: type.stringValue(), atIndex: row, inLessonAtIndex: self.lessonSelector.indexOfSelectedItem, inLevelAtIndex: self.levelSelector.indexOfSelectedItem, newValue: sender.state == .on, forProperty: JSONKey.includedInFinal.keyValue())
+
+        self.changed = true
+        self.toggleButtons()
+        
+    }
+    
+   
+    
+    
     
     func didGetURL(url: URL, dropView: DropView) {
         guard self.selectedLevel != nil, self.selectedLesson != nil  else {
@@ -304,13 +324,32 @@ extension CreateVC:NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        
+        guard let lesson = self.selectedLesson else { return nil}
+        let cardType = tableView == self.vocabTable ? JSONKey.vocabularyCards.keyValue():JSONKey.grammarCards.keyValue()
+        
+        let card = lesson[cardType].arrayValue[row]
+        
+        if tableColumn!.identifier.rawValue == "final" {
+            
+            let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! CheckCell
+            
+            if let include = card[JSONKey.includedInFinal.keyValue()].bool, include == false {
+                cell.checkBox.state = .off
+            } else {
+                cell.checkBox.state = .on
+            }
+            
+            return cell
+            
+        }
+        
         let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
         
-        guard let lesson = self.selectedLesson else { return cell}
+        
         
         let field = tableColumn!.identifier.rawValue.lowercased()
-        let cardType = tableView == self.vocabTable ? JSONKey.vocabularyCards.keyValue():JSONKey.grammarCards.keyValue()
-        let card = lesson[cardType].arrayValue[row]
+        
        
         cell.textField?.stringValue = card[field].stringValue
         
