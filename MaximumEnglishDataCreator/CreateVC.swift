@@ -79,8 +79,8 @@ class CreateVC: NSViewController, DropViewDelegate {
     
     func toggleButtons() {
         
-        self.vocabDropView.isEnabled = self.selectedLesson != nil
-        self.grammarDropView.isEnabled = self.selectedLesson != nil
+        self.vocabDropView.isEnabled = self.levelSelector.numberOfItems > 0
+        self.grammarDropView.isEnabled = self.levelSelector.numberOfItems > 0
         self.lessonRemoveButton.isEnabled = self.selectedLesson != nil
         self.lessonAddButton.isEnabled = self.selectedLevel != nil
         
@@ -227,7 +227,9 @@ class CreateVC: NSViewController, DropViewDelegate {
     
     
     func didGetURL(url: URL, dropView: DropView) {
-        guard self.selectedLevel != nil, self.selectedLesson != nil  else {
+        
+        
+        guard self.selectedLevel != nil else {
             dropView.displayText = "Drag File Here"
             return
         }
