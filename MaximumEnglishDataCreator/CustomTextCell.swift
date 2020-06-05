@@ -12,6 +12,7 @@ enum ColumnType: CaseIterable {
     case question
     case answer
     case notes
+    case alternatives
     
     func stringValue()->String {
         
@@ -26,7 +27,11 @@ enum ColumnType: CaseIterable {
         case .notes:
             return JSONKey.notes.keyValue()
             
+        case .alternatives:
+            return JSONKey.alternateAnswers.keyValue()
+            
         }
+    
         
     }
     

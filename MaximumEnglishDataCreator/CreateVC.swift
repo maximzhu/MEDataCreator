@@ -243,7 +243,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         
         let rows = text.components(separatedBy: "\n")
         for row in rows {
-            var dic = [String:String]()
+            var dic = [String:Any]()
             let values = row.components(separatedBy: ",")
             
             guard values.count >= 2, values[0].trimmingCharacters(in: .whitespacesAndNewlines) != "", values[1].trimmingCharacters(in: .whitespacesAndNewlines) != "" else {continue}
@@ -253,6 +253,8 @@ class CreateVC: NSViewController, DropViewDelegate {
             dic[JSONKey.answer.keyValue()] = values[1].replacingOccurrences(of: "\r", with: "")
             
             if values.count > 2 { dic[JSONKey.notes.keyValue()] = values[2] }
+            
+            if values.count > 3 { dic[JSONKey.alternateAnswers.keyValue()] = values[2].replacingOccurrences(of: "\r", with: "").components(separatedBy: "|") }
             
             cards.append(JSON(dic))
             
@@ -306,8 +308,21 @@ class CreateVC: NSViewController, DropViewDelegate {
         
         let property = ColumnType.allCases[column].stringValue()
         
-        self.jsonManager.editCard(ofType: type.stringValue(), atIndex: row, inLessonAtIndex: self.lessonSelector.indexOfSelectedItem, inLevelAtIndex: self.levelSelector.indexOfSelectedItem, newValue: sender.stringValue, forProperty: property)
-        print("changed")
+        var newValue:Any = sender.stringValue
+        
+        if property == ColumnType.alternatives.stringValue() {
+            
+            let separators = [",  ", ", ", ", "]
+            newValue = separators.reduce([sender.stringValue]) { (comps, separator) in
+                return comps.flatMap { return $0.components(separatedBy: separator) }.filter({return !$0.isEmpty})
+            }
+        }
+            
+//            snewValue = sender.stringValue.components(separatedBy: ",")}
+        
+        
+        self.jsonManager.editCard(ofType: type.stringValue(), atIndex: row, inLessonAtIndex: self.lessonSelector.indexOfSelectedItem, inLevelAtIndex: self.levelSelector.indexOfSelectedItem, newValue: newValue, forProperty: property)
+        
         self.changed = true
         self.toggleButtons()
         
@@ -354,9 +369,17 @@ extension CreateVC:NSTableViewDelegate, NSTableViewDataSource {
         
         let cell = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
         
-        let field = tableColumn!.identifier.rawValue.lowercased()
+        if tableColumn!.identifier.rawValue == "alternate" {
+           
+            let list  = card[JSONKey.alternateAnswers.keyValue()].arrayValue.map {$0.stringValue}
+            cell.textField?.stringValue = list.joined(separator: ",")
+                
+        } else {
+            let field = tableColumn!.identifier.rawValue.lowercased()
+             cell.textField?.stringValue = card[field].stringValue
+        }
         
-        cell.textField?.stringValue = card[field].stringValue
+        
         
         return cell
     }

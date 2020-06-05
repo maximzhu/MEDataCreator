@@ -39,6 +39,7 @@ enum JSONKey {
     case notes
     case includedInFinal
     case pretest
+    case alternateAnswers
     
     func keyValue()->String {
         
@@ -66,7 +67,10 @@ enum JSONKey {
             return "includeInFinal"
         case .pretest:
             return "pretest"
+            case .alternateAnswers:
+            return "alternate"
         }
+        
     }
 }
 
