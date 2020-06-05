@@ -312,7 +312,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         
         if property == ColumnType.alternatives.stringValue() {
             
-            let separators = [",  ", ", ", ", "]
+            let separators = [",  ", ", ", ","]
             newValue = separators.reduce([sender.stringValue]) { (comps, separator) in
                 return comps.flatMap { return $0.components(separatedBy: separator) }.filter({return !$0.isEmpty})
             }
