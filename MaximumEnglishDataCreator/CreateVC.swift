@@ -254,7 +254,7 @@ class CreateVC: NSViewController, DropViewDelegate {
             
             if values.count > 2 { dic[JSONKey.notes.keyValue()] = values[2] }
             
-            if values.count > 3 { dic[JSONKey.alternateAnswers.keyValue()] = values[2].replacingOccurrences(of: "\r", with: "").components(separatedBy: "|") }
+            if values.count > 3 { dic[JSONKey.alternateAnswers.keyValue()] = values[3].replacingOccurrences(of: "\r", with: "").components(separatedBy: "|") }
             
             cards.append(JSON(dic))
             
