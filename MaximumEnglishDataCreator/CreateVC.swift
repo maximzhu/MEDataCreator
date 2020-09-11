@@ -156,7 +156,7 @@ class CreateVC: NSViewController, DropViewDelegate {
     
     @IBAction func addLevelPressed(_ sender: NSButton) {
         
-        guard let name = self.getUniqueName(nameList: self.jsonManager.levels.map({$0[JSONKey.levelName.keyValue()].stringValue}), placeholderName: "Course - \(self.jsonManager.levels.count + 1)") else {return}
+        guard let name = self.getNewLevelName() else {return}
         
         var _levels = self.jsonManager.levels
          
@@ -175,7 +175,7 @@ class CreateVC: NSViewController, DropViewDelegate {
     
     @IBAction func addLessonPressed(_ sender: NSButton) {
         
-        guard let name = self.getUniqueName(nameList: self.lessons.map({$0[JSONKey.lessonName.keyValue()].stringValue}), placeholderName: "Lesson - \(self.lessons.count + 1)") else {return}
+        guard let name = self.getNewLessonName() else {return}
         
         var _lessons = self.lessons
          
@@ -189,16 +189,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.markChanged()
     }
     
-    func getUniqueName(nameList:[String], placeholderName:String, message:String = "Please choose a name")->String? {
-        
-        guard let name = Alert.GetUserInput(message: message, placeholderText: "\(placeholderName)") else {return nil}
-        
-        if name == "" || nameList.contains(name) {
-            return getUniqueName(nameList: nameList, placeholderName: placeholderName, message: "Please choose UNIQUE non-blank name")
-        }
-        
-        return name
-    }
+
     
     
     @IBAction func removeLessonPressed(_ sender: Any) {
@@ -257,6 +248,57 @@ class CreateVC: NSViewController, DropViewDelegate {
            self.markChanged()
        }
     
+    @IBAction func renameLevelPressed(_ sender: Any) {
+        guard self.selectedLevel != nil, let name = self.getNewLevelName(rename: self.selectedLevel![JSONKey.levelName.keyValue()].string) else {return}
+        
+        var _levels = self.jsonManager.levels
+        _levels[self.levelSelector.indexOfSelectedItem][JSONKey.levelName.keyValue()] = JSON(name)
+        
+        let lessonIndex = self.lessonSelector.indexOfSelectedItem
+        self.jsonManager.setLevels(_levels)
+        self.setLevelPicker(selectIndex:self.levelSelector.indexOfSelectedItem )
+        self.setLessonPicker(selectIndex: lessonIndex)
+        self.markChanged()
+ 
+    }
+    
+       @IBAction func renameLessonPressed(_ sender: Any) {
+        print("renaming")
+           guard self.selectedLesson != nil, let name = self.getNewLevelName(rename: self.selectedLesson![JSONKey.lessonName.keyValue()].string) else {
+            print("not gonna do it")
+            return
+            
+        }
+           
+        var _lessons = self.lessons
+        
+           _lessons[self.lessonSelector.indexOfSelectedItem][JSONKey.lessonName.keyValue()] = JSON(name)
+           
+        self.jsonManager.setLessons(_lessons, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
+           self.setLessonPicker(selectIndex:self.lessonSelector.indexOfSelectedItem )
+           
+           self.markChanged()
+    
+       }
+    
+    func getUniqueName(nameList:[String], placeholderName:String, message:String = "Please choose a name")->String? {
+        
+        guard let name = Alert.GetUserInput(message: message, placeholderText: "\(placeholderName)") else {return nil}
+        
+        if name == "" || nameList.contains(name) {
+            return getUniqueName(nameList: nameList, placeholderName: placeholderName, message: "Please choose UNIQUE non-blank name")
+        }
+        
+        return name
+    }
+    
+    func getNewLevelName(rename:String? = nil)-> String? {
+        return self.getUniqueName(nameList: self.jsonManager.levels.map({$0[JSONKey.levelName.keyValue()].stringValue}), placeholderName: rename ?? "Course - \(self.jsonManager.levels.count + 1)")
+    }
+    
+    func getNewLessonName(rename:String? = nil)->String? {
+        return self.getUniqueName(nameList: self.lessons.map({$0[JSONKey.lessonName.keyValue()].stringValue}), placeholderName: rename ?? "Lesson - \(self.lessons.count + 1)")
+    }
    
     func changeLessonNotes(to newText:String) {
         

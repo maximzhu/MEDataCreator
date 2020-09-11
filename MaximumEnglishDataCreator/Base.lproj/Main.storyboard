@@ -810,18 +810,18 @@ Gw
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="TUm-Tb-Wxz">
-                                                <rect key="frame" x="18" y="155" width="36" height="17"/>
+                                                <rect key="frame" x="18" y="155" width="54" height="17"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="32" id="4f7-AY-rJf"/>
+                                                    <constraint firstAttribute="width" constant="50" id="4f7-AY-rJf"/>
                                                 </constraints>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Level:" id="tGG-ty-OVk">
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Course:" id="tGG-ty-OVk">
                                                     <font key="font" usesAppearanceFont="YES"/>
                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XiW-Dm-9eo">
-                                                <rect key="frame" x="70" y="150" width="259" height="25"/>
+                                                <rect key="frame" x="88" y="150" width="241" height="25"/>
                                                 <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="CoB-wg-54c" id="H8U-J2-XSe">
                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -878,7 +878,7 @@ Gw
                                                     <font key="font" metaFont="system" size="18"/>
                                                 </buttonCell>
                                                 <connections>
-                                                    <action selector="removeLessonPressed:" target="zRI-Ac-Uyf" id="8u6-yp-AcN"/>
+                                                    <action selector="removeLessonPressed:" target="zRI-Ac-Uyf" id="hDJ-7m-SPX"/>
                                                 </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="SIC-PV-srb">
@@ -987,6 +987,26 @@ Gw
                                                     <action selector="levelChangePressed:" target="zRI-Ac-Uyf" id="Fmk-IG-YGk"/>
                                                 </connections>
                                             </button>
+                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8zV-kU-pp2">
+                                                <rect key="frame" x="458" y="146" width="89" height="32"/>
+                                                <buttonCell key="cell" type="push" title="Rename" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zAd-gT-Jts">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="renameLevelPressed:" target="zRI-Ac-Uyf" id="F3m-6W-Ick"/>
+                                                </connections>
+                                            </button>
+                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ymE-Nu-YpV">
+                                                <rect key="frame" x="458" y="108" width="89" height="32"/>
+                                                <buttonCell key="cell" type="push" title="Rename" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PmE-wW-dA2">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="renameLessonPressed:" target="zRI-Ac-Uyf" id="SCP-5V-XaR"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <constraints>
                                             <constraint firstItem="Nmz-Dw-JQp" firstAttribute="centerY" secondItem="SIC-PV-srb" secondAttribute="centerY" id="0jU-yM-2kx"/>
@@ -1014,11 +1034,15 @@ Gw
                                             <constraint firstAttribute="bottom" secondItem="N77-DM-t7b" secondAttribute="bottom" constant="10" id="VNf-NA-aZP"/>
                                             <constraint firstItem="AEU-7b-mvU" firstAttribute="centerY" secondItem="XiW-Dm-9eo" secondAttribute="centerY" id="YSh-W2-4x3"/>
                                             <constraint firstItem="BCr-zs-JXg" firstAttribute="leading" secondItem="AEU-7b-mvU" secondAttribute="trailing" constant="2" id="ZBd-R6-1su"/>
+                                            <constraint firstItem="ymE-Nu-YpV" firstAttribute="leading" secondItem="8zV-kU-pp2" secondAttribute="leading" id="d05-h1-s45"/>
+                                            <constraint firstItem="8zV-kU-pp2" firstAttribute="leading" secondItem="fTE-fA-rVD" secondAttribute="trailing" constant="10" id="dhO-qa-txx"/>
                                             <constraint firstItem="S6E-Cc-g3t" firstAttribute="centerY" secondItem="BCr-zs-JXg" secondAttribute="centerY" id="dqD-5Z-aBH"/>
                                             <constraint firstItem="XiW-Dm-9eo" firstAttribute="trailing" secondItem="DVe-Gb-LPU" secondAttribute="trailing" id="eiI-0S-DSK"/>
                                             <constraint firstItem="XiW-Dm-9eo" firstAttribute="top" secondItem="fWu-tn-Mmv" secondAttribute="top" constant="23" id="fEX-Oa-Y7F"/>
                                             <constraint firstItem="Nmz-Dw-JQp" firstAttribute="height" secondItem="SIC-PV-srb" secondAttribute="height" id="fZA-XD-roP"/>
                                             <constraint firstItem="SIC-PV-srb" firstAttribute="centerY" secondItem="q39-iz-y8b" secondAttribute="centerY" id="g9y-tp-nH9"/>
+                                            <constraint firstItem="8zV-kU-pp2" firstAttribute="centerY" secondItem="fTE-fA-rVD" secondAttribute="centerY" id="gI2-2i-ALF"/>
+                                            <constraint firstItem="ymE-Nu-YpV" firstAttribute="centerY" secondItem="Nmz-Dw-JQp" secondAttribute="centerY" id="hOr-X4-UqW"/>
                                             <constraint firstItem="N77-DM-t7b" firstAttribute="leading" secondItem="IhA-QX-9Rd" secondAttribute="trailing" constant="20" id="iqO-pw-J3s"/>
                                             <constraint firstItem="pSd-aQ-C3R" firstAttribute="centerY" secondItem="DVe-Gb-LPU" secondAttribute="centerY" id="jr8-4s-fGd"/>
                                             <constraint firstItem="BCr-zs-JXg" firstAttribute="height" secondItem="AEU-7b-mvU" secondAttribute="height" id="n6h-Ri-vDh"/>
