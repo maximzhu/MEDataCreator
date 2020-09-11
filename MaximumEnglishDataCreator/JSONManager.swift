@@ -11,15 +11,6 @@ import SwiftyJSON
 
 
 
-enum LevelName:String, CaseIterable {
-    
-    case beginner = "Beginner"
-    case lowerIntermediate = "Lower Intermediate"
-    case intermediate = "Intermediate"
-    case upperIntermediate = "Upper Intermediate"
-    case advanced = "Advanced"
-    
-}
 
 //MARK: - =============== KEYS ===============
 enum JSONKey {
@@ -29,6 +20,7 @@ enum JSONKey {
     case lessons
     case levelID
     case lessonID
+    case levelName
     case pretestID
     case lessonName
     case vocabularyCards
@@ -40,6 +32,7 @@ enum JSONKey {
     case includedInFinal
     case pretest
     case alternateAnswers
+    case displayAnswer
     
     func keyValue()->String {
         
@@ -51,7 +44,7 @@ enum JSONKey {
             return "levels"
         case .lessons:
             return "lessons"
-        case .levelID, .lessonName:
+        case .levelName, .lessonName:
             return "name"
         case .vocabularyCards:
             return "vocabulary"
@@ -69,8 +62,12 @@ enum JSONKey {
             return "pretest"
             case .alternateAnswers:
             return "alternate"
+        case .displayAnswer:
+            return "display_answer"
+        case .levelID:
+            return "level_id"
         }
-        
+    
     }
 }
 
@@ -119,33 +116,46 @@ class JSONManager: NSObject {
     
     func populateLevels() {
         
-        let levelNames = self.levels.map { $0[JSONKey.levelID.keyValue()].stringValue }
-        var levels = [JSON]()
+        var _levels = self.levels
         
-        for levelName in LevelName.allCases {
+        for (i, level) in _levels.enumerated() {
             
-            var level:JSON!
-            
-            if levelNames.contains(levelName.rawValue) {
-                level = self.levels[levelNames.firstIndex(of: levelName.rawValue)!]
-                
-            } else {
-                level = JSON([JSONKey.levelID.keyValue():JSON(levelName.rawValue)])
-                
+            if self.pretest(forLevel: _levels[i]).isEmpty {
+                _levels[i][JSONKey.pretest.keyValue()] = [JSONKey.pretestID.keyValue():UUID().uuidString,  JSONKey.vocabularyCards.keyValue():[JSON](), JSONKey.grammarCards.keyValue():[JSON]()]
             }
             
-            //check for pretest
-            if self.pretest(forLevel: level).isEmpty {
-                level[JSONKey.pretest.keyValue()] = [JSONKey.pretestID.keyValue():UUID().uuidString,  JSONKey.vocabularyCards.keyValue():[JSON](), JSONKey.grammarCards.keyValue():[JSON]()]
-            }
+            let currentLevelID = level[JSONKey.levelID.keyValue()].string
             
-            levels.append(level)
-                
+            if currentLevelID == nil || currentLevelID! == level[JSONKey.levelName.keyValue()].stringValue {
+                _levels[i][JSONKey.levelID.keyValue()] = JSON(UUID().uuidString)
+            }
+            _levels.append(level)
         }
         
-        json[JSONKey.levels.keyValue()] = JSON(levels)
+//        for levelName in LevelName.allCases {
+//
+//            var level:JSON!
+//
+//            if levelNames.contains(levelName.rawValue) {
+//                level = self.levels[levelNames.firstIndex(of: levelName.rawValue)!]
+//
+//            } else {
+//                level = JSON([JSONKey.levelID.keyValue():JSON(levelName.rawValue)])
+//
+//            }
+//
+//            //check for pretest
+//
+//
+//
+//
+//        }
+        
+        self.json[JSONKey.levels.keyValue()] = JSON(_levels)
         
     }
+    
+    func setLevels(_ levels:[JSON]) { self.json[JSONKey.levels.keyValue()] = JSON(levels) }
     
    
     func setLessons(_ lessons:[JSON], forLevelAtIndex index:Int) {

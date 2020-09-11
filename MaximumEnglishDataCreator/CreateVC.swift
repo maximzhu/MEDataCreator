@@ -21,6 +21,11 @@ class CreateVC: NSViewController, DropViewDelegate {
     @IBOutlet weak var lessonDownButton: NSButton!
     @IBOutlet weak var lessonAddButton: NSButton!
     @IBOutlet weak var lessonRemoveButton: NSButton!
+    
+    @IBOutlet weak var levelUpButton: NSButton!
+    @IBOutlet weak var levelDownButton: NSButton!
+    @IBOutlet weak var levelAddButton: NSButton!
+    @IBOutlet weak var levelRemoveButton: NSButton!
     @IBOutlet weak var saveButton: NSButton!
     @IBOutlet var notesField: NSTextView!
     
@@ -36,14 +41,12 @@ class CreateVC: NSViewController, DropViewDelegate {
         
     }
     
-    var selectedLevelName:LevelName {
-        var index = self.levelSelector.indexOfSelectedItem
-        if LevelName.allCases.count > index {
-            
-            index = LevelName.allCases.count - 1
-            
-        }
-        return LevelName.allCases[index]
+    var selectedLevelID:String? {
+        let index = self.levelSelector.indexOfSelectedItem
+        guard self.jsonManager.levels.count > index else {return nil}
+        
+        return self.jsonManager.levels[index][JSONKey.levelID.keyValue()].stringValue
+       
         
     }
     
@@ -84,6 +87,10 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.lessonRemoveButton.isEnabled = self.selectedLesson != nil
         self.lessonAddButton.isEnabled = self.selectedLevel != nil
         
+        self.levelUpButton.isEnabled = self.selectedLevel != nil
+        self.levelDownButton.isEnabled = self.selectedLevel != nil
+        self.levelRemoveButton.isEnabled = self.selectedLevel != nil
+        
         self.lessonUpButton.isEnabled = self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 2
         self.lessonDownButton.isEnabled = self.lessonSelector.indexOfSelectedItem > 0 && self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 1
         
@@ -100,9 +107,9 @@ class CreateVC: NSViewController, DropViewDelegate {
     func setLevelPicker(selectIndex index:Int = 0) {
         
         self.levelSelector.removeAllItems()
-        for level in LevelName.allCases {
+        for level in self.jsonManager.levels {
             
-            self.levelSelector.addItem(withTitle: level.rawValue)
+            self.levelSelector.addItem(withTitle: level[JSONKey.levelName.keyValue()].stringValue)
             
         }
         
@@ -112,7 +119,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.setLessonPicker()
         
     }
-    
+
     
     
     func setLessonPicker(selectIndex index:Int = 0) {
@@ -128,6 +135,10 @@ class CreateVC: NSViewController, DropViewDelegate {
         
         self.lessonSelector.selectItem(at: index)
         
+        self.reloadAll()
+    }
+    
+    func reloadAll() {
         self.vocabTable.reloadData()
         self.grammarTable.reloadData()
         self.toggleButtons()
@@ -143,33 +154,76 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.toggleButtons()
     }
     
-    @IBAction func addLessonPressed(_ sender: Any) {
+    @IBAction func addLevelPressed(_ sender: NSButton) {
         
-        guard let lessonName = Alert.GetUserInput(message: "Please choose a lesson name", placeholderText: "Lesson - 1") else {return}
-        print("lesson chosen")
-        var lessons = self.lessons
+        guard let name = self.getUniqueName(nameList: self.jsonManager.levels.map({$0[JSONKey.levelName.keyValue()].stringValue}), placeholderName: "Course - \(self.jsonManager.levels.count + 1)") else {return}
         
-        let newLesson:JSON = [JSONKey.lessonID.keyValue():"\(lessonName)\(Date().timeIntervalSince1970)", JSONKey.lessonName.keyValue():lessonName, JSONKey.vocabularyCards.keyValue():[JSON](), JSONKey.grammarCards.keyValue():[JSON]()]
+        var _levels = self.jsonManager.levels
+         
+         let newLevel = JSON([JSONKey.levelID.keyValue():UUID().uuidString, JSONKey.levelName.keyValue():name])
+         
+         _levels.append(newLevel)
+         
+         self.jsonManager.setLevels(_levels)
         
-       lessons.append(newLesson)
+         self.setLevelPicker(selectIndex: self.jsonManager.levels.count - 1)
         
-        self.jsonManager.setLessons(lessons, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
+        self.markChanged()
         
+    }
+    
+    
+    @IBAction func addLessonPressed(_ sender: NSButton) {
+        
+        guard let name = self.getUniqueName(nameList: self.lessons.map({$0[JSONKey.lessonName.keyValue()].stringValue}), placeholderName: "Lesson - \(self.lessons.count + 1)") else {return}
+        
+        var _lessons = self.lessons
+         
+        let newLesson:JSON = [JSONKey.lessonID.keyValue():"\(UUID().uuidString)", JSONKey.lessonName.keyValue():name, JSONKey.vocabularyCards.keyValue():[JSON](), JSONKey.grammarCards.keyValue():[JSON]()]
+         
+        _lessons.append(newLesson)
+         
+         self.jsonManager.setLessons(_lessons, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
         self.setLessonPicker(selectIndex:self.lessonSelector.numberOfItems - 1)
         
         self.markChanged()
     }
     
+    func getUniqueName(nameList:[String], placeholderName:String, message:String = "Please choose a name")->String? {
+        
+        guard let name = Alert.GetUserInput(message: message, placeholderText: "\(placeholderName)") else {return nil}
+        
+        if name == "" || nameList.contains(name) {
+            return getUniqueName(nameList: nameList, placeholderName: placeholderName, message: "Please choose UNIQUE non-blank name")
+        }
+        
+        return name
+    }
     
     
     @IBAction func removeLessonPressed(_ sender: Any) {
         
+        guard self.selectedLesson != nil else { return }
         if Alert.PresentConfirmationAlert(text: "Are you sure you want to delete this Lesson?") {
-            guard self.selectedLesson != nil else { return }
+            
             var lessons = self.lessons
             lessons.remove(at: self.lessonSelector.indexOfSelectedItem)
             
             self.jsonManager.setLessons(lessons, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
+            
+            self.setLessonPicker()
+            self.markChanged()
+        }
+    }
+    
+    @IBAction func removeLevelPressed(_ sender: Any) {
+        guard self.selectedLevel != nil else { return }
+        if Alert.PresentConfirmationAlert(text: "Are you sure you want to delete this Level? All lessons and cards will also be deleted!!!") {
+            
+            var _levels = jsonManager.levels
+            _levels.remove(at: self.levelSelector.indexOfSelectedItem)
+            
+            self.jsonManager.setLevels(_levels)
             
             self.setLevelPicker()
             self.markChanged()
@@ -177,17 +231,31 @@ class CreateVC: NSViewController, DropViewDelegate {
     }
     
     
-    
     @IBAction func lessonChangePressed(_ sender: NSButton) {
         
         guard self.selectedLesson != nil else { return }
-        let amount = sender == self.lessonUpButton ? 1 : -1
+        
+        let amount = sender.tag - 1
+        
         let (adjustedArray, newIndex) = self.arrayChangingItemPosition(atIndex: self.lessonSelector.indexOfSelectedItem, inArray: self.jsonManager.lessons(forLevel: self.selectedLevel!), by: amount)
         self.jsonManager.setLessons(adjustedArray, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
         
         self.setLessonPicker(selectIndex: newIndex)
         self.markChanged()
     }
+    
+    @IBAction func levelChangePressed(_ sender: NSButton) {
+           
+           guard self.selectedLevel != nil else { return }
+           
+           let amount = sender.tag - 1
+           
+           let (adjustedArray, newIndex) = self.arrayChangingItemPosition(atIndex: self.levelSelector.indexOfSelectedItem, inArray: self.jsonManager.levels, by: amount)
+           self.jsonManager.setLevels(adjustedArray)
+           
+           self.setLevelPicker(selectIndex: newIndex)
+           self.markChanged()
+       }
     
    
     func changeLessonNotes(to newText:String) {
