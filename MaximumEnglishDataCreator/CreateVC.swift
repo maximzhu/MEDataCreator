@@ -188,10 +188,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         
         self.markChanged()
     }
-    
 
-    
-    
     @IBAction func removeLessonPressed(_ sender: Any) {
         
         guard self.selectedLesson != nil else { return }
@@ -220,7 +217,6 @@ class CreateVC: NSViewController, DropViewDelegate {
             self.markChanged()
         }
     }
-    
     
     @IBAction func lessonChangePressed(_ sender: NSButton) {
         
@@ -417,6 +413,7 @@ class CreateVC: NSViewController, DropViewDelegate {
             return }
         
         let property = ColumnType.allCases[column].stringValue()
+        
         
         var newValue:Any = sender.stringValue
         

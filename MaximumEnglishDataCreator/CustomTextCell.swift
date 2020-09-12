@@ -13,6 +13,8 @@ enum ColumnType: CaseIterable {
     case answer
     case notes
     case alternatives
+    case displayAnswer
+    
     
     func stringValue()->String {
         
@@ -29,10 +31,10 @@ enum ColumnType: CaseIterable {
             
         case .alternatives:
             return JSONKey.alternateAnswers.keyValue()
+        case .displayAnswer:
+            return JSONKey.displayAnswer.keyValue()
             
         }
-    
-        
     }
     
 }
