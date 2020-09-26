@@ -38,7 +38,7 @@ enum JSONKey {
         
         switch self {
             
-        case .jsonID, .lessonID, .pretestID:
+        case .jsonID, .lessonID, .pretestID, .levelID:
             return "id"
         case .levels:
             return "levels"
@@ -64,10 +64,6 @@ enum JSONKey {
             return "alternate"
         case .displayAnswer:
             return "display_answer"
-        case .levelID:
-            return "level_id"
-        }
-    
     }
 }
 
@@ -268,4 +264,5 @@ class JSONManager: NSObject {
         FileManager.WriteTextToFile(text: nv, toFolder: realURL.deletingLastPathComponent(), fileName: realURL.lastPathComponent)
         
     }
+}
 }

@@ -30,8 +30,6 @@ class CreateVC: NSViewController, DropViewDelegate {
     @IBOutlet var notesField: NSTextView!
     
     
-    
-    
     var jsonManager:JSONManager!
     
     var selectedLevel:JSON? {
