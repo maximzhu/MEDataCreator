@@ -33,6 +33,7 @@ enum JSONKey {
     case pretest
     case alternateAnswers
     case displayAnswer
+    case lessonCost
     
     func keyValue()->String {
         
@@ -64,8 +65,13 @@ enum JSONKey {
             return "alternate"
         case .displayAnswer:
             return "display_answer"
+        case .lessonCost:
+            return "cost"
+        
+        }
     }
 }
+    
 
 enum CardType {
     
@@ -237,6 +243,8 @@ class JSONManager: NSObject {
     
     func grammar(forLesson lesson:JSON)->[JSON] { return lesson[JSONKey.grammarCards.keyValue()].arrayValue }
     
+    func cost(forLesson lesson:JSON)->Int { return lesson[JSONKey.lessonCost.keyValue()].intValue }
+    
 
     func writeFile() {
         var fileURL = self.jsonURL
@@ -265,4 +273,4 @@ class JSONManager: NSObject {
         
     }
 }
-}
+

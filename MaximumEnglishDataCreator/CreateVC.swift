@@ -9,7 +9,7 @@
 import Cocoa
 import SwiftyJSON
 
-class CreateVC: NSViewController, DropViewDelegate {
+class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
 
     @IBOutlet weak var vocabDropView: FileDropView!
     @IBOutlet weak var grammarDropView: FileDropView!
@@ -28,6 +28,7 @@ class CreateVC: NSViewController, DropViewDelegate {
     @IBOutlet weak var levelRemoveButton: NSButton!
     @IBOutlet weak var saveButton: NSButton!
     @IBOutlet var notesField: NSTextView!
+    @IBOutlet weak var costField: NSTextField!
     
     
     var jsonManager:JSONManager!
@@ -75,6 +76,7 @@ class CreateVC: NSViewController, DropViewDelegate {
         self.grammarTable.delegate = self
         self.grammarTable.dataSource = self
         self.notesField.delegate = self
+        self.costField.delegate = self
         self.setLevelPicker()
     }
     
@@ -139,15 +141,34 @@ class CreateVC: NSViewController, DropViewDelegate {
     func reloadAll() {
         self.vocabTable.reloadData()
         self.grammarTable.reloadData()
+        self.costField.stringValue = ""
+        if let lesson = self.selectedLesson {
+            self.costField.stringValue = "\(jsonManager.cost(forLesson: lesson))"
+        }
+        
         self.toggleButtons()
     }
+    @IBAction func costEntered(_ sender: Any) {
+        guard self.selectedLesson != nil else {return}
+        let number = Int(self.costField.stringValue) ?? 0
+        var _lessons = self.lessons
+        
+           _lessons[self.lessonSelector.indexOfSelectedItem][JSONKey.lessonCost.keyValue()] = JSON(number)
+           
+        self.jsonManager.setLessons(_lessons, forLevelAtIndex: self.levelSelector.indexOfSelectedItem)
+           self.setLessonPicker(selectIndex:self.lessonSelector.indexOfSelectedItem )
+        
+        self.markChanged()
+    }
+    
+   
     
     @IBAction func didChangeSelection(_ sender: NSPopUpButton) {
         if sender == self.levelSelector {
             self.setLessonPicker()
         } else {
-            self.vocabTable.reloadData()
-            self.grammarTable.reloadData()
+            self.reloadAll()
+            
         }
         self.toggleButtons()
     }
@@ -258,7 +279,7 @@ class CreateVC: NSViewController, DropViewDelegate {
     
        @IBAction func renameLessonPressed(_ sender: Any) {
         print("renaming")
-           guard self.selectedLesson != nil, let name = self.getNewLevelName(rename: self.selectedLesson![JSONKey.lessonName.keyValue()].string) else {
+           guard self.selectedLesson != nil, let name = self.getNewLessonName(rename: self.selectedLesson![JSONKey.lessonName.keyValue()].string) else {
             print("not gonna do it")
             return
             
