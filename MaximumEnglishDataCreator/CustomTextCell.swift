@@ -8,34 +8,35 @@
 
 import Cocoa
 
-enum ColumnType: CaseIterable {
-    case question
-    case answer
-    case notes
-    case alternatives
-    case displayAnswer
+enum ColumnType:String, CaseIterable {
+    case question = "question"
+    case answer = "answer"
+    case notes = "notes"
+    case alternatives = "alternate"
+    case displayAnswer = "display_answer"
     
     
-    func stringValue()->String {
-        
-        switch self {
-            
-        case .question:
-            return JSONKey.question.keyValue()
-            
-        case .answer:
-            return JSONKey.answer.keyValue()
-            
-        case .notes:
-            return JSONKey.notes.keyValue()
-            
-        case .alternatives:
-            return JSONKey.alternateAnswers.keyValue()
-        case .displayAnswer:
-            return JSONKey.displayAnswer.keyValue()
-            
-        }
-    }
+//    func stringValue()->String {
+//
+//        switch self {
+//
+//        case .question:
+//            return JSONKey.question.keyValue()
+//
+//        case .answer:
+//            return JSONKey.answer.keyValue()
+//
+//        case .notes:
+//            return JSONKey.notes.keyValue()
+//
+//        case .alternatives:
+//            return JSONKey.alternateAnswers.keyValue()
+//
+//        case .displayAnswer:
+//            return JSONKey.displayAnswer.keyValue()
+//
+//        }
+//    }
     
 }
 

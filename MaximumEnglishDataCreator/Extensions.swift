@@ -52,3 +52,10 @@ extension FileManager {
 }
 
 
+struct DisplayableError: Error, LocalizedError {
+    let errorDescription: String?
+
+    init(_ description: String) {
+        errorDescription = description
+    }
+}

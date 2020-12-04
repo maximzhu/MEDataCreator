@@ -22,6 +22,11 @@
 		C4A0BCC7235B55DF000EA12F /* DropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A0BCC4235B55D9000EA12F /* DropView.swift */; };
 		FC53D45223780F980057FAE0 /* CustomTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC53D45123780F980057FAE0 /* CustomTextCell.swift */; };
 		FC7C72702456F17D00C497F1 /* CheckCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7C726F2456F17D00C497F1 /* CheckCell.swift */; };
+		FC7D521D257910AD00CD38BC /* JSONModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7D521C257910AD00CD38BC /* JSONModel.swift */; };
+		FC7D52202579111500CD38BC /* CardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7D521F2579111500CD38BC /* CardModel.swift */; };
+		FCEE23CB257A010B00DBC8B3 /* LessonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEE23CA257A010B00DBC8B3 /* LessonModel.swift */; };
+		FCEE23CE257A047D00DBC8B3 /* PretestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEE23CD257A047D00DBC8B3 /* PretestModel.swift */; };
+		FCEE23D3257A05D200DBC8B3 /* CourseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEE23D2257A05D200DBC8B3 /* CourseModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +50,11 @@
 		F86D2BD375EA5B580FFE9853 /* Pods_MaximumEnglishDataCreator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MaximumEnglishDataCreator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC53D45123780F980057FAE0 /* CustomTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextCell.swift; sourceTree = "<group>"; };
 		FC7C726F2456F17D00C497F1 /* CheckCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCell.swift; sourceTree = "<group>"; };
+		FC7D521C257910AD00CD38BC /* JSONModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONModel.swift; sourceTree = "<group>"; };
+		FC7D521F2579111500CD38BC /* CardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardModel.swift; sourceTree = "<group>"; };
+		FCEE23CA257A010B00DBC8B3 /* LessonModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonModel.swift; sourceTree = "<group>"; };
+		FCEE23CD257A047D00DBC8B3 /* PretestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PretestModel.swift; sourceTree = "<group>"; };
+		FCEE23D2257A05D200DBC8B3 /* CourseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +104,7 @@
 				C4A0BCBA235B5496000EA12F /* Info.plist */,
 				C4A0BCBB235B5496000EA12F /* MaximumEnglishDataCreator.entitlements */,
 				C493AAB5235B85BF000F86F5 /* Prefs.swift */,
+				FCEE23C9257A00FA00DBC8B3 /* JSONModel */,
 			);
 			path = MaximumEnglishDataCreator;
 			sourceTree = "<group>";
@@ -123,6 +134,18 @@
 				F86D2BD375EA5B580FFE9853 /* Pods_MaximumEnglishDataCreator.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FCEE23C9257A00FA00DBC8B3 /* JSONModel */ = {
+			isa = PBXGroup;
+			children = (
+				FC7D521C257910AD00CD38BC /* JSONModel.swift */,
+				FCEE23CA257A010B00DBC8B3 /* LessonModel.swift */,
+				FCEE23D2257A05D200DBC8B3 /* CourseModel.swift */,
+				FCEE23CD257A047D00DBC8B3 /* PretestModel.swift */,
+				FC7D521F2579111500CD38BC /* CardModel.swift */,
+			);
+			path = JSONModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -245,8 +268,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC7C72702456F17D00C497F1 /* CheckCell.swift in Sources */,
+				FCEE23CE257A047D00DBC8B3 /* PretestModel.swift in Sources */,
 				C493AAB6235B85BF000F86F5 /* Prefs.swift in Sources */,
 				C4A0BCB4235B5495000EA12F /* StartView.swift in Sources */,
+				FC7D52202579111500CD38BC /* CardModel.swift in Sources */,
+				FCEE23D3257A05D200DBC8B3 /* CourseModel.swift in Sources */,
+				FC7D521D257910AD00CD38BC /* JSONModel.swift in Sources */,
+				FCEE23CB257A010B00DBC8B3 /* LessonModel.swift in Sources */,
 				C472E6EC235C03340049763B /* CreateVC.swift in Sources */,
 				C4A0BCB2235B5495000EA12F /* AppDelegate.swift in Sources */,
 				C493AAB8235B865F000F86F5 /* Extensions.swift in Sources */,

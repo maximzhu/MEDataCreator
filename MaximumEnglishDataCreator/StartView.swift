@@ -24,25 +24,25 @@ class StartVC: NSViewController, DropViewDelegate {
     
     
     func didGetURL(url: URL, dropView: DropView) {
-        guard let data = try? Data(contentsOf: url), let _ = try? JSON(data: data) else {
-            self.dropView.displayText = "Not a valid JSON"
-            return
+        
+        if let jsonModel = JSONModel.fromURL(url: url) {
+            self.presentCreateVC(withModel: jsonModel)
         }
         
-        self.presentCreateVC(withURL:url)
+//        self.presentCreateVC(withURL:url)
         
     }
     
     @IBAction func createNewPressed(_ sender: Any) {
-        self.presentCreateVC(withURL:nil)
+        self.presentCreateVC(withModel:JSONModel())
     }
     
     
     
-    func presentCreateVC(withURL url:URL?) {
+    func presentCreateVC(withModel model:JSONModel) {
         
         let vc = NSStoryboard(name:"Main", bundle: nil).instantiateController(withIdentifier: "create") as! CreateVC
-        vc.jsonManager = JSONManager(jsonURL: url)
+        vc.jsonModel = model
         self.presentAsSheet(vc)
     }
     
