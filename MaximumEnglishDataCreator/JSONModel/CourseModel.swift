@@ -19,6 +19,7 @@ class CourseModel: Codable {
     var name:String
     var lessons:[LessonModel] = []
     var pretest:PretestModel
+    var video:String?
     
     private var notes:String?
     
@@ -32,6 +33,7 @@ class CourseModel: Codable {
         case pretest
         case notes
         case image
+        case video
     }
     
     init(withName name:String) {

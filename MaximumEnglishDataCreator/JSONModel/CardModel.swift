@@ -36,6 +36,8 @@ class CardModel: Codable {
     }
     var question:String
     var answer:String
+    var questionAudio:String?
+    var answerAudio:String?
     
     private var _alternates:[String]?
     var alternates:[String]{
@@ -68,6 +70,8 @@ class CardModel: Codable {
         case _notes = "notes"
         case _includedInFinal = "includeInFinal"
         case _displayAnswer = "display_answer"
+        case questionAudio
+        case answerAudio
     }
     
     func setID(){ _id = id }
