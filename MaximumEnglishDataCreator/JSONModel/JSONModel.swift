@@ -11,13 +11,13 @@ import Cocoa
 
 class JSONModel: Codable {
     
-    var courses:[CourseModel] = []
+    var courses:[Course] = []
     var id:String
     var url:URL?
     
     enum CodingKeys:String, CodingKey {
         case id
-        case courses = "levels"
+        case courses
     }
     
     init(){
@@ -46,7 +46,7 @@ class JSONModel: Codable {
         self.id = UUID().uuidString
         if self.url == nil {
             var count = 1
-            let originalFileName = "MEJSONData"
+            let originalFileName = "STJSONData"
             var newURL = Prefs.DefaultFolder.appendingPathComponent(originalFileName + ".json")
             while newURL.fileExists {
                 let newName = originalFileName + "-" + String(format: "%2d", count)

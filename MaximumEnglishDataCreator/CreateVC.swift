@@ -11,10 +11,8 @@ import SwiftyJSON
 
 class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
 
-    @IBOutlet weak var vocabDropView: FileDropView!
-    @IBOutlet weak var grammarDropView: FileDropView!
-    @IBOutlet weak var vocabTable: NSTableView!
-    @IBOutlet weak var grammarTable: NSTableView!
+    @IBOutlet weak var cardDropView: FileDropView!
+    @IBOutlet weak var cardTable: NSTableView!
     @IBOutlet weak var levelSelector: NSPopUpButton!
     @IBOutlet weak var lessonSelector: NSPopUpButton!
     @IBOutlet weak var lessonUpButton: NSButton!
@@ -34,14 +32,14 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
 //    var jsonManager:JSONManager!
     var jsonModel:JSONModel!
     
-    var selectedCourse:CourseModel? {
+    var selectedCourse:Course? {
         let index = self.levelSelector.indexOfSelectedItem
         guard index >= 0, index < self.jsonModel.courses.count else {return nil}
         return self.jsonModel.courses[index]
     }
     
     
-    var selectedLesson:LessonModel? {
+    var selectedLesson:Lesson? {
         
         let index =  self.lessonSelector.indexOfSelectedItem
         
@@ -51,40 +49,52 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         
     }
     
-    var lessons:[LessonModel] { return self.selectedCourse?.lessons ?? [] }
+    var lessons:[Lesson] { return self.selectedCourse?.lessons ?? [] }
     
     var changed = false
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.vocabDropView.delegate = self
-        self.grammarDropView.delegate = self
-        self.vocabTable.delegate = self
-        self.vocabTable.dataSource = self
-        self.grammarTable.delegate = self
-        self.grammarTable.dataSource = self
+        self.cardDropView.delegate = self
+        self.cardTable.delegate = self
+        self.cardTable.dataSource = self
         self.notesField.delegate = self
         self.costField.delegate = self
+        self.costField.isEditable = false
+        self.notesField.isEditable = false
         self.setLevelPicker()
+        
     }
     
     func toggleButtons() {
         
-        self.vocabDropView.isEnabled = self.levelSelector.numberOfItems > 0
-        self.grammarDropView.isEnabled = self.levelSelector.numberOfItems > 0
+        self.cardDropView.isEnabled = self.levelSelector.numberOfItems > 0
+//        self.grammarDropView.isEnabled = self.levelSelector.numberOfItems > 0
         self.lessonRemoveButton.isEnabled = self.selectedLesson != nil
         self.lessonAddButton.isEnabled = self.selectedCourse != nil
         
-        self.levelUpButton.isEnabled = self.selectedCourse != nil
-        self.levelDownButton.isEnabled = self.selectedCourse != nil
+        self.toggleUpDownButtons(upButton: self.levelUpButton, downButton: self.levelDownButton, selector: self.levelSelector)
         self.levelRemoveButton.isEnabled = self.selectedCourse != nil
         
-        self.lessonUpButton.isEnabled = self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 2
-        self.lessonDownButton.isEnabled = self.lessonSelector.indexOfSelectedItem > 0 && self.lessonSelector.indexOfSelectedItem < self.lessonSelector.numberOfItems - 1
+        self.toggleUpDownButtons(upButton: self.lessonUpButton, downButton: self.lessonDownButton, selector: self.lessonSelector)
         
         self.saveButton.isEnabled = self.changed
         self.notesField.isEditable = self.selectedLesson != nil
+        self.costField.isEnabled = self.selectedLesson != nil
+        self.costField.isEditable = self.selectedLesson != nil
+//        if selectedLesson == nil {
+//            self.costField.resignFirstResponder()
+//            self.notesField.resignFirstResponder()
+//        }
+    }
+    
+    func toggleUpDownButtons(upButton:NSButton, downButton:NSButton, selector:NSPopUpButton) {
+        
+        upButton.isEnabled = selector.indexOfSelectedItem < selector.numberOfItems - 2
+        downButton.isEnabled = selector.indexOfSelectedItem > 0 && selector.indexOfSelectedItem < selector.numberOfItems - 1
+        
+        
     }
     
     func markChanged(){
@@ -121,8 +131,8 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     }
     
     func reloadAll() {
-        self.vocabTable.reloadData()
-        self.grammarTable.reloadData()
+        self.cardTable.reloadData()
+//        self.grammarTable.reloadData()
         
         self.costField.stringValue = "\(self.selectedLesson?.cost ?? 0)"
         
@@ -153,7 +163,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         
         guard let name = self.getNewLevelName() else {return}
          
-        self.jsonModel.courses.append(CourseModel(withName: name))
+        self.jsonModel.courses.append(Course(withName: name))
          
          self.setLevelPicker(selectIndex: self.jsonModel.courses.count - 1)
         
@@ -166,7 +176,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         
         guard let course = self.selectedCourse, let name = self.getNewLessonName() else {return}
         
-        course.lessons.append(LessonModel(withName: name))
+        course.lessons.append(Lesson(withName: name))
          
         self.setLessonPicker(selectIndex:self.lessonSelector.numberOfItems - 1)
         
@@ -287,30 +297,22 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     
 
     @IBAction func checkBoxChecked(_ sender: NSButton) {
+    
         
-        let isVocab = self.vocabTable.row(for: sender) >= 0
-        
-        let row = isVocab ? self.vocabTable.row(for: sender) : self.grammarTable.row(for: sender)
-        
-        if row < 0 { return }
-        
-        guard let card = self.card(ofType: isVocab ? .vocab : .grammar, atIndex: row) else {return}
+        guard let card = self.card(atIndex:self.cardTable.row(for: sender)) else {return}
         
         card.includedInFinal = sender.state == .on
         
-        
-//        self.jsonManager.editCard(ofType: type.stringValue(), atIndex: row, inLessonAtIndex: self.lessonSelector.indexOfSelectedItem, inLevelAtIndex: self.levelSelector.indexOfSelectedItem, newValue: sender.state == .on, forProperty: JSONKey.includedInFinal.keyValue())
-//
         self.changed = true
         self.toggleButtons()
-//
+
     }
     
-    func card(ofType type:CardType, atIndex index: Int) -> CardModel? {
+    func card(atIndex index: Int) -> Card? {
         
         guard index >= 0 else {return nil}
         
-        let cards = self.cardsForSelected(ofType: type)
+        let cards = self.cardsForSelected()
         
         guard index < cards.count else {return nil}
         
@@ -318,58 +320,11 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         
     }
     
-    func cardsForSelected(ofType type:CardType)-> [CardModel] {
+    func cardsForSelected()-> [Card] {
         guard let course = self.selectedCourse else {return []}
-        return (type == .vocab ? selectedLesson?.vocabulary : selectedLesson?.grammar) ?? (type == .vocab ? course.pretest.vocabulary : course.pretest.grammar)
+        return selectedLesson?.cards ?? course.pretest.cards
     }
-    
-    
-//    func didGetURL(url: URL, dropView: DropView) {
-//
-//
-//        guard self.selectedLevel != nil else {
-//            dropView.displayText = "Drag File Here"
-//            return
-//        }
-//
-//        guard let text = try? String(contentsOf: url) else {
-//            dropView.displayText = "cannot read url"
-//            return
-//        }
-//
-//        var cards = [JSON]()
-//
-//        let rows = text.components(separatedBy: "\n")
-//        for row in rows {
-//            var dic = [String:Any]()
-//            let values = row.components(separatedBy: ",")
-//
-//            guard values.count >= 2, values[0].trimmingCharacters(in: .whitespacesAndNewlines) != "", values[1].trimmingCharacters(in: .whitespacesAndNewlines) != "" else {continue}
-//
-//
-//            dic[JSONKey.question.keyValue()] = values[0].replacingOccurrences(of: "\r", with: "")
-//            dic[JSONKey.answer.keyValue()] = values[1].replacingOccurrences(of: "\r", with: "")
-//
-//            if values.count > 2 { dic[JSONKey.notes.keyValue()] = values[2] }
-//
-//            if values.count > 3 { dic[JSONKey.alternateAnswers.keyValue()] = values[3].replacingOccurrences(of: "\r", with: "").components(separatedBy: "|") }
-//
-//            cards.append(JSON(dic))
-//
-//        }
-//
-//        if cards.count < 0 { return }
-//
-//        let type = dropView == self.vocabDropView ? JSONKey.vocabularyCards.keyValue() : JSONKey.grammarCards.keyValue()
-//
-//        jsonManager.setCards(cards, ofType: type, forLessonAtIndex: self.lessonSelector.indexOfSelectedItem, inLevelAtIndex: self.levelSelector.indexOfSelectedItem)
-//
-//        self.markChanged()
-//        self.vocabTable.reloadData()
-//        self.grammarTable.reloadData()
-//    }
-//
-    
+      
     
     
     @IBAction func savePressed(_ sender: Any) {
@@ -393,48 +348,92 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     
     
     @IBAction func tableViewTextChanged(_ sender: NSTextField) {
-        var type:CardType = .vocab
-        var row = self.vocabTable.row(for: sender)
-        var column = self.vocabTable.column(for: sender)
-        
-        
-        if row < 0 {
-            type = .grammar
-            row = self.grammarTable.row(for: sender)
-            column = self.grammarTable.column(for: sender)
-        }
-        
-        guard let card = self.card(ofType: type, atIndex: row), column >= 0, column < ColumnType.allCases.count else {
-            print("something messed up \(row) \(column)")
-            return }
-        
-        var newValue = sender.stringValue
-        
-        switch ColumnType.allCases[column] {
-        
-        case .question:
-            card.question = newValue
-        case .answer:
-            card.answer = newValue
-        case .notes:
-            card.notes = newValue
-        case .alternatives:
-            let separators = [",  ", ", ", ","]
-            let arrayValue = separators.reduce([newValue]) { (comps, separator) in
-                return comps.flatMap { return $0.components(separatedBy: separator) }.filter({return !$0.isEmpty})
+        if self.cardTable.row(for: sender) > 0 {
+            let column = self.cardTable.column(for: sender)
+            
+            
+            guard let card = self.card(atIndex: self.cardTable.row(for: sender)), column >= 0, column < ColumnType.allCases.count else {
+                
+                return }
+            
+            let newValue = sender.stringValue
+            
+            switch ColumnType.allCases[column] {
+            
+            case .question:
+                card.question = newValue
+            case .answer:
+                card.answer = newValue
+            case .notes:
+                card.notes = newValue
+            case .alternatives:
+                let separators = [",  ", ", ", ","]
+                let arrayValue = separators.reduce([newValue]) { (comps, separator) in
+                    return comps.flatMap { return $0.components(separatedBy: separator) }.filter({return !$0.isEmpty})
+                }
+                card.alternates = arrayValue
+                
+            case .displayAnswer:
+                
+                card.displayAnswer = newValue
+                
             }
-            card.alternates = arrayValue
-            
-        case .displayAnswer:
-            
-            card.displayAnswer = newValue
-            
-        }
 
-        self.changed = true
-        self.toggleButtons()
+            self.changed = true
+            self.toggleButtons()
+        }
+    
         
     }
+    
+        func didGetURL(url: URL, dropView: DropView) {
+    
+    
+            guard let course = self.selectedCourse else {
+                print("no course selected")
+                dropView.displayText = "Drag File Here"
+                return
+            }
+    
+            guard let text = try? String(contentsOf: url) else {
+                dropView.displayText = "cannot read url"
+                return
+            }
+    
+            var cards = [Card]()
+    
+            let rows = text.components(separatedBy: "\n")
+            for row in rows {
+               
+                let values = row.components(separatedBy: ",")
+    
+                guard values.count >= 2, values[0].trimmingCharacters(in: .whitespacesAndNewlines) != "", values[1].trimmingCharacters(in: .whitespacesAndNewlines) != "" else {continue}
+                
+                let question = values[0].removingNewLines
+                let answer = values[1].removingNewLines
+                var notes:String?
+                var alternateAnswers:[String]?
+    
+                if values.count > 2 { notes = values[2] }
+    
+                if values.count > 3 { alternateAnswers = values[3].removingNewLines.components(separatedBy: "|") }
+    
+                cards.append(Card(question: question, answer: answer,notes: notes, alternates: alternateAnswers))
+    
+            }
+    
+            if cards.count < 0 { return }
+    
+            if let lesson = self.selectedLesson {
+                lesson.cards = cards
+            } else {
+                course.pretest.cards = cards
+            }
+    
+            self.markChanged()
+            self.reloadAll()
+        }
+    
     
     
 }
@@ -442,15 +441,14 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
 extension CreateVC:NSTableViewDelegate, NSTableViewDataSource {
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        let type:CardType = tableView == self.vocabTable ? .vocab : .grammar
-        return self.cardsForSelected(ofType: type).count
+        
+        return self.cardsForSelected().count
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        let cardType:CardType = tableView == self.vocabTable ? .vocab : .grammar
         
-        guard let card = self.card(ofType: cardType, atIndex: row) else {return nil}
+        guard let card = self.card(atIndex: row) else {return nil}
         
         
         if tableColumn!.identifier.rawValue == "final" {
@@ -478,7 +476,7 @@ extension CreateVC:NSTableViewDelegate, NSTableViewDataSource {
         case .answer:
             cellText = card.answer
         case .notes:
-            cellText = card.notes
+            cellText = card.notes ?? ""
         case .alternatives:
             cellText = card.alternates.joined(separator: ",")
         case .displayAnswer:

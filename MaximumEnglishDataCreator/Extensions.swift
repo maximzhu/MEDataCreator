@@ -51,6 +51,12 @@ extension FileManager {
     
 }
 
+extension String {
+    var removingNewLines:String {
+        return self.replacingOccurrences(of: "\r", with: "")
+    }
+}
+
 
 struct DisplayableError: Error, LocalizedError {
     let errorDescription: String?
@@ -59,3 +65,5 @@ struct DisplayableError: Error, LocalizedError {
         errorDescription = description
     }
 }
+
+

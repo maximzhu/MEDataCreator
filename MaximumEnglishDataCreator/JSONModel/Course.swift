@@ -15,13 +15,18 @@ import SwiftyJSON
 class Course: Codable {
     
     
-    let id:String
-    let name:String
-    let lessons:[Lesson] = []
-    let pretest:Pretest
-    let video:String?
-    let notes:String?
-    let image:String?
+    var id:String
+    var name:String
+    var lessons:[Lesson] = []
+    var pretest:Pretest
+    var video:String?
+    var notes:String?
+    var image:String?
+    var _reward:Int?
+        var reward:Int{
+            get { return _reward ?? 100}
+            set { _reward = newValue }
+        }
 
     
     enum CodingKeys:String, CodingKey {
@@ -32,12 +37,13 @@ class Course: Codable {
         case notes
         case image
         case video
+        case _reward = "reward"
     }
     
     init(withName name:String) {
         self.id = UUID().uuidString
         self.name = name
-        self.pretest = PretestModel()
+        self.pretest = Pretest()
     }
     
 }

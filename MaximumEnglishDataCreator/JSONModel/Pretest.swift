@@ -12,12 +12,11 @@ import SwiftyJSON
 
 
 
-class PretestModel: Codable {
+class Pretest: Codable {
     
     
     var id:String
-    var vocabulary:[CardModel] = []
-    var grammar:[CardModel] = []
+    var cards:[Card] = []
     
     private var _notes:String?
     var notes:String {
@@ -27,8 +26,7 @@ class PretestModel: Codable {
 
     enum CodingKeys:String, CodingKey {
         case id
-        case vocabulary
-        case grammar
+        case cards
         case _notes = "notes"
     }
     

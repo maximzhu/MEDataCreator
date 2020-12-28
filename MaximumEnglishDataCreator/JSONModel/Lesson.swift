@@ -12,13 +12,12 @@ import SwiftyJSON
 
 
 
-class LessonModel: Codable {
+class Lesson: Codable {
     
     
     var id:String
     var name:String
-    var vocabulary:[CardModel] = []
-    var grammar:[CardModel] = []
+    var cards:[Card] = []
     
     
     private var _cost:Int?
@@ -26,23 +25,24 @@ class LessonModel: Codable {
         get { return _cost ?? 0 }
         set { _cost = newValue }
     }
-    
-    private var _notes:String?
-    var notes:String {
-        get { return _notes ?? "" }
-        set { _notes = newValue }
+    var _reward:Int?
+    var reward:Int{
+        get { return _reward ?? 100}
+        set { _reward = newValue }
     }
     
+    var notes:String?
     var image:String?
     var video:String?
+    
     
     enum CodingKeys:String, CodingKey {
         case id
         case name
-        case vocabulary
+        case cards
+        case _reward = "reward"
         case _cost = "cost"
-        case grammar
-        case _notes = "notes"
+        case notes
         case image
         case video
     }

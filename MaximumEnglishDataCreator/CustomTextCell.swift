@@ -15,44 +15,12 @@ enum ColumnType:String, CaseIterable {
     case alternatives = "alternate"
     case displayAnswer = "display_answer"
     
-    
-//    func stringValue()->String {
-//
-//        switch self {
-//
-//        case .question:
-//            return JSONKey.question.keyValue()
-//
-//        case .answer:
-//            return JSONKey.answer.keyValue()
-//
-//        case .notes:
-//            return JSONKey.notes.keyValue()
-//
-//        case .alternatives:
-//            return JSONKey.alternateAnswers.keyValue()
-//
-//        case .displayAnswer:
-//            return JSONKey.displayAnswer.keyValue()
-//
-//        }
-//    }
-    
 }
 
 class CustomTextCell: NSTextFieldCell {
 
     
     var column:ColumnType = .question
-    var cardType:CardType = .vocab
-    
-    @IBInspectable
-    var vocab:Bool {
-        
-        get { return self.cardType == .vocab }
-        set {self.cardType = newValue ? .vocab : .grammar}
-        
-    }
     
     @IBInspectable
     var columnNumber:Int {
