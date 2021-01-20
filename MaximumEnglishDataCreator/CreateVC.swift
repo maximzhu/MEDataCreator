@@ -348,16 +348,17 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     
     
     @IBAction func tableViewTextChanged(_ sender: NSTextField) {
-        if self.cardTable.row(for: sender) > 0 {
+        print("changing table")
+        if self.cardTable.row(for: sender) >= 0 {
             let column = self.cardTable.column(for: sender)
             
             
             guard let card = self.card(atIndex: self.cardTable.row(for: sender)), column >= 0, column < ColumnType.allCases.count else {
-                
+                print("something wrong \( self.card(atIndex: self.cardTable.row(for: sender))) \(column)")
                 return }
             
             let newValue = sender.stringValue
-            
+            print("column is \(ColumnType.allCases[column])")
             switch ColumnType.allCases[column] {
             
             case .question:
@@ -371,6 +372,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
                 let arrayValue = separators.reduce([newValue]) { (comps, separator) in
                     return comps.flatMap { return $0.components(separatedBy: separator) }.filter({return !$0.isEmpty})
                 }
+                print("array value is \(arrayValue)")
                 card.alternates = arrayValue
                 
             case .displayAnswer:
