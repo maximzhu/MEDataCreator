@@ -367,7 +367,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
             case .notes:
                 card.notes = newValue
             case .alternatives:
-                let separators = [",  ", ", ", ","]
+                let separators = ["|  ", "| ", "|"]
                 let arrayValue = separators.reduce([newValue]) { (comps, separator) in
                     return comps.flatMap { return $0.components(separatedBy: separator) }.filter({return !$0.isEmpty})
                 }
