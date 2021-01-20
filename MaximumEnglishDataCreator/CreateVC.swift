@@ -27,6 +27,9 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     @IBOutlet weak var saveButton: NSButton!
     @IBOutlet var notesField: NSTextView!
     @IBOutlet weak var costField: NSTextField!
+    @IBOutlet weak var courseVideoField: NSTextField!
+    @IBOutlet weak var courseImageField: NSTextField!
+    @IBOutlet weak var lessonVideoField: NSTextField!
     
     
 //    var jsonManager:JSONManager!
@@ -81,12 +84,17 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         
         self.saveButton.isEnabled = self.changed
         self.notesField.isEditable = self.selectedLesson != nil
-        self.costField.isEnabled = self.selectedLesson != nil
-        self.costField.isEditable = self.selectedLesson != nil
-//        if selectedLesson == nil {
-//            self.costField.resignFirstResponder()
-//            self.notesField.resignFirstResponder()
-//        }
+       
+        for field in [self.costField, self.lessonVideoField] {
+            field?.isEnabled = self.selectedLesson != nil
+            field?.isEditable = self.selectedLesson != nil
+        }
+        
+        
+        for field in [self.courseVideoField, self.courseImageField] {
+            field?.isEnabled = self.selectedCourse != nil
+            field?.isEditable = self.selectedCourse != nil
+        }
     }
     
     func toggleUpDownButtons(upButton:NSButton, downButton:NSButton, selector:NSPopUpButton) {
@@ -134,7 +142,11 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         self.cardTable.reloadData()
 //        self.grammarTable.reloadData()
         
+        
         self.costField.stringValue = "\(self.selectedLesson?.cost ?? 0)"
+        self.lessonVideoField.stringValue = "\(self.selectedLesson?.video ?? "")"
+        self.courseVideoField.stringValue = "\(self.selectedCourse?.video ?? "")"
+        self.courseImageField.stringValue = "\(self.selectedCourse?.image ?? "")"
         
         self.toggleButtons()
     }
@@ -147,7 +159,22 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         self.markChanged()
     }
     
-   
+    @IBAction func videoImageEntered(_ sender: NSTextField) {
+        guard let course = self.selectedCourse else { return}
+        
+        let strValue:String? = sender.stringValue.isEmpty ? nil : sender.stringValue
+        if sender == self.courseImageField {
+            course.image = strValue
+        } else if sender == self.courseVideoField {
+            course.video = strValue
+        } else if sender == self.lessonVideoField {
+            guard let lesson = self.selectedLesson else {return}
+            
+            lesson.video = strValue
+        }
+        self.markChanged()
+    }
+    
     
     @IBAction func didChangeSelection(_ sender: NSPopUpButton) {
         if sender == self.levelSelector {
