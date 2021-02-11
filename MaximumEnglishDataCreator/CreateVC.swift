@@ -27,6 +27,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     @IBOutlet weak var saveButton: NSButton!
     @IBOutlet var notesField: NSTextView!
     @IBOutlet weak var costField: NSTextField!
+    @IBOutlet weak var rewardField: NSTextField!
     @IBOutlet weak var courseVideoField: NSTextField!
     @IBOutlet weak var courseImageField: NSTextField!
     @IBOutlet weak var lessonVideoField: NSTextField!
@@ -85,7 +86,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         self.saveButton.isEnabled = self.changed
         self.notesField.isEditable = self.selectedLesson != nil
        
-        for field in [self.costField, self.lessonVideoField] {
+        for field in [self.costField, self.lessonVideoField, self.rewardField] {
             field?.isEnabled = self.selectedLesson != nil
             field?.isEditable = self.selectedLesson != nil
         }
@@ -144,6 +145,7 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
         
         
         self.costField.stringValue = "\(self.selectedLesson?.cost ?? 0)"
+        self.rewardField.stringValue = "\(self.selectedLesson?.reward ?? 50)"
         self.lessonVideoField.stringValue = "\(self.selectedLesson?.video ?? "")"
         self.courseVideoField.stringValue = "\(self.selectedCourse?.video ?? "")"
         self.courseImageField.stringValue = "\(self.selectedCourse?.image ?? "")"
@@ -153,11 +155,24 @@ class CreateVC: NSViewController, DropViewDelegate, NSTextFieldDelegate {
     
     @IBAction func costEntered(_ sender: Any) {
         guard let lesson = self.selectedLesson else {return}
-        print("adding cost")
+       
         lesson.cost = Int(self.costField.intValue)
         print(lesson.cost)
         self.markChanged()
     }
+    
+    @IBAction func rewardEntered(_ sender: Any) {
+        guard let lesson = self.selectedLesson else {return}
+        
+        let _value = Int(self.rewardField.intValue)
+        
+        if _value > 0 {
+            lesson.reward = _value
+            self.markChanged()
+          
+        }
+    }
+    
     
     @IBAction func videoImageEntered(_ sender: NSTextField) {
         guard let course = self.selectedCourse else { return}

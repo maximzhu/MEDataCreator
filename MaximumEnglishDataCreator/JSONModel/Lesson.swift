@@ -27,7 +27,7 @@ class Lesson: Codable {
     }
     var _reward:Int?
     var reward:Int{
-        get { return _reward ?? 100}
+        get { return _reward ?? 50}
         set { _reward = newValue }
     }
     
